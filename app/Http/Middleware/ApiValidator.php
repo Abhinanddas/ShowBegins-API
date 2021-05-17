@@ -21,6 +21,6 @@ class ApiValidator
         if (($appKey == env('APP_KEY')) && ($appSecret == env('APP_SECRET'))) {
             return $next($request);
         }
-        return response()->json(['status' => 'error', 'msg' => 'Unauthorised Access!'], 401);
+        return response()->json(['status' => 'error', 'msg' => trans('messages.app_key_missing')], 401);
     }
 }

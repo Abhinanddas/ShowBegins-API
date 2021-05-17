@@ -14,14 +14,15 @@ class CreateUsersTable extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
             $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->string('email');
             $table->string('password');
-            $table->rememberToken();
-            $table->timestamps();
-            $table->string('api_token',60)->unique()->nullable();
+            $table->boolean('is_deleted')->default(false);
+            $table->timestamp('created_at')->useCurrent();
+            $table->string('mobile_no')->nullable();
+            $table->string('access_token')->nullable();
+            $table->timestamp('token_expires_at')->nullable();
         });
     }
 
@@ -33,8 +34,5 @@ class CreateUsersTable extends Migration
     public function down()
     {
         Schema::dropIfExists('users');
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['api_token']);
-        });
     }
 }

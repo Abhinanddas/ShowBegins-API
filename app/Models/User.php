@@ -2,38 +2,49 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
-class User extends Authenticatable
+class User extends Model
 {
-    use Notifiable;
+    protected $table = 'users';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'name', 'email', 'password',
-    ];
+    public function __construct()
+    {
+        $this->tableObject = $this->getConnectionResolver()->connection()->table($this->table);
+    }
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'password', 'remember_token',
-    ];
+    public function signUpUser($data)
+    {
+        try {
+            return $this->tableObject->insertGetId($data);
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    public function login($email, $password)
+    {
+        return $this->tableObject
+            ->select('id')
+            ->where('email', $email)
+            ->where('password', $password)
+            ->first();
+    }
+
+    public function updateAccessTokens($userId, $accessToken, $refreshToken)
+    {
+        return $this->tableObject
+            ->where('id', $userId)
+            ->update([
+                'access_token' => $accessToken,
+                'refresh_token' => $refreshToken,
+            ]);
+    }
+
+    public static function findUserByAccessToken($accessToken){
+        return DB::table('users')
+        ->where('access_token',$accessToken)
+        ->first();
+    }
 }
