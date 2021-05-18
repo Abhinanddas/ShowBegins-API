@@ -42,9 +42,21 @@ class User extends Model
             ]);
     }
 
-    public static function findUserByAccessToken($accessToken){
+    public static function findUserByAccessToken($accessToken)
+    {
         return DB::table('users')
-        ->where('access_token',$accessToken)
-        ->first();
+            ->where('access_token', $accessToken)
+            ->first();
+    }
+
+    public function logout($userId)
+    {
+
+        return $this->tableObject
+            ->where('id', $userId)
+            ->update([
+                'access_token' => null,
+                'refresh_token' => null,
+            ]);
     }
 }

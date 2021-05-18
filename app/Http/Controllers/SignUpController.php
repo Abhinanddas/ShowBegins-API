@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\CommonService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -20,7 +21,7 @@ class SignUpController extends Controller
         $validator = Validator::make($params, $requiredFields);
 
         if ($validator->fails()) {
-            return response()->json(['status' => 'error', 'msg' => $signUpService->getSignUpErrorMessage($validator->errors())]);
+            return response()->json(['status' => 'error', 'msg' => CommonService::getErrorMessagesFromValidator($validator->errors())]);
         }
 
         $userId = $signUpService->signUpUser($params);

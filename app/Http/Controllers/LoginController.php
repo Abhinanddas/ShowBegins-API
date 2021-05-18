@@ -13,11 +13,9 @@ class LoginController extends Controller
 {
 
     private $loginService;
-    private $commonService;
-    public function __construct(LoginService $loginService, CommonService $commonService)
+    public function __construct(LoginService $loginService)
     {
-        $this->loginService =    $loginService;
-        $this->commonService =    $commonService;
+        $this->loginService = $loginService;
     }
 
     public function login(Request $request)
@@ -30,7 +28,7 @@ class LoginController extends Controller
         $validator = Validator::make($params, $requiredFields);
 
         if ($validator->fails()) {
-            return response()->json(['status' => 'erorr', 'msg' => $this->commonService->getErrorMessagesFromValidator($validator->errors())]);
+            return response()->json(['status' => 'erorr', 'msg' => CommonService::getErrorMessagesFromValidator($validator->errors())]);
         }
 
         $userId = $this->loginService->login($params['email'], $params['password']);
@@ -40,16 +38,30 @@ class LoginController extends Controller
         }
 
         $accessTokens = $this->loginService->handleAccessTokens($userId);
-        $data= [
-            'user_id'=>$userId,
-            'access_token'=>$accessTokens['access_token'],
-            'refresh_token'=>$accessTokens['refresh_token'],
+        $data = [
+            'user_id' => $userId,
+            'access_token' => $accessTokens['access_token'],
+            'refresh_token' => $accessTokens['refresh_token'],
         ];
-        return response()->json(['status'=>'success','msg'=>trans('meesages.login_success'),'data'=>$data]);
+        return response()->json(['status' => 'success', 'msg' => trans('meesages.login_success'), 'data' => $data]);
     }
 
-    public function getRefreshToken(Request $request){
+    public function getRefreshToken(Request $request)
+    {
+        $userId = $request->session()->get('user')['id'];
+        $accessTokens = $this->loginService->handleAccessTokens($userId);
+        $data = [
+            'user_id' => $userId,
+            'access_token' => $accessTokens['access_token'],
+            'refresh_token' => $accessTokens['refresh_token'],
+        ];
+        return response()->json(['status' => 'success', 'data' => $data]);
+    }
 
-        dump($request->session()->all()['user']);die;
+    public function logout(Request $request)
+    {
+        $userId = $request->session()->get('user')['id'];
+        // $this->loginService->logout($userId);
+        return response()->json(['status' => 'success', 'msg' => trans('messages.logout_success')]);
     }
 }

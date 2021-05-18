@@ -38,7 +38,6 @@ class LoginService
 
     public function handleAccessTokens($userId)
     {
-
         $tokens = $this->generateAccessTokens($userId);
         $this->userModel->updateAccessTokens($userId,$tokens['access_token'], $tokens['refresh_token']);
         return $tokens;
@@ -53,5 +52,9 @@ class LoginService
 
     public static function findUserByAccessToken($accessToken){
         return User::findUserByAccessToken($accessToken);
+    }
+
+    public function logout($userId){
+        return $this->userModel->logout($userId);
     }
 }

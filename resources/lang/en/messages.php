@@ -8,4 +8,7 @@ return [
     'access_token_missing' => 'Access token missing.',
     'app_key_missing' => 'Unauthorised access!',
     'invalid_access_token' => 'Invalid access token.',
+    'logout_success' => 'User logged out successfully.',
+    'api_success_status' => 'Api is Live.',
+    'valid_session' => 'Valid session.',
 ];

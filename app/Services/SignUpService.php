@@ -3,39 +3,20 @@
 namespace App\Services;
 
 use App\Models\User as User;
+use App\Services\CommonService as CommonService;
 
 class SignUpService
 {
-
-    public $userModel;
-    public function __construct(User $user){
-        $this->userModel = $user;
-    }
-
-    public function getSignUpErrorMessage($validatorObj)
+    public function signUpUser($params)
     {
-        $msg = '';
-        foreach ($validatorObj->getMessages() as  $messages) {
-            foreach ($messages as $message) {
-                $msg .= $message.' ';
-            }
-        }
-        return $msg;
-    }
 
-    public function signUpUser($params){
-
-        $fields =[
-            'email'=>$params['email'],
-            'password'=>$this->hashPassword($params['password']),
-            'name'=>$params['name'],
+        $fields = [
+            'email' => $params['email'],
+            'password' => CommonService::hashPassword($params['password']),
+            'name' => $params['name'],
         ];
 
         $userId = $this->userModel->signUpUser($fields);
         return $userId;
-    }
-
-    public function hashPassword($password){
-        return hash("md5",$password);
     }
 }
