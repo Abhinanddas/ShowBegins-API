@@ -31,19 +31,19 @@ class LoginController extends Controller
             return response()->json(['status' => 'erorr', 'msg' => CommonService::getErrorMessagesFromValidator($validator->errors())]);
         }
 
-        $userId = $this->loginService->login($params['email'], $params['password']);
+        $userData = $this->loginService->login($params['email'], $params['password']);
 
-        if (!$userId) {
+        if (!$userData) {
             return response()->json(['status' => 'error', 'msg' => trans('messages.login_failure')]);
         }
 
-        $accessTokens = $this->loginService->handleAccessTokens($userId);
+        $accessTokens = $this->loginService->handleAccessTokens($userData['id']);
         $data = [
-            'user_id' => $userId,
+            'user_data' => $userData,
             'access_token' => $accessTokens['access_token'],
             'refresh_token' => $accessTokens['refresh_token'],
         ];
-        return response()->json(['status' => 'success', 'msg' => trans('meesages.login_success'), 'data' => $data]);
+        return response()->json(['status' => 'success', 'msg' => trans('messages.login_success'), 'data' => $data]);
     }
 
     public function getRefreshToken(Request $request)

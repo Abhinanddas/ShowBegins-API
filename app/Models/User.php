@@ -26,7 +26,7 @@ class User extends Model
     public function login($email, $password)
     {
         return $this->tableObject
-            ->select('id')
+            ->select('id','email','name','mobile_no')
             ->where('email', $email)
             ->where('password', $password)
             ->first();

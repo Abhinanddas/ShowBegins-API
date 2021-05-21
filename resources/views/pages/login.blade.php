@@ -3,7 +3,9 @@
 <div class="limiter">
 	<div class="container-login100">
 		<div class="wrap-login100">
-			<form class="login100-form validate-form" name="loginForm" id="login-form">
+			<form class="login100-form validate-form" name="loginForm" id="login-form" method="post" action="do-login">
+				@csrf
+				<!-- {{ csrf_field() }} -->
 				<span class="login100-form-title p-b-26">
 					Welcome
 				</span>
@@ -20,7 +22,7 @@
 					<span class="btn-show-pass">
 						<i class="zmdi zmdi-eye"></i>
 					</span>
-					<input class="input100" type="password" name="pass" id="password" required>
+					<input class="input100" type="password" name="password" id="password" required>
 					<span class="focus-input100" data-placeholder="Password"></span>
 				</div>
 

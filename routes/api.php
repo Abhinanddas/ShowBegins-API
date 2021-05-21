@@ -20,7 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 Route::post('login', 'LoginController@login');
 Route::post('signup', 'SignUpController@signup');
-Route::post('api-status','ApiController@checkApiStatus');
+Route::get('api-status','ApiController@checkApiStatus');
 Route::middleware(['session.validator'])->group(
     function () {
         Route::post('get-referesh-token', 'LoginController@getRefreshToken');

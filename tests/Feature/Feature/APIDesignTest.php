@@ -21,7 +21,7 @@ class APIDesignTest extends TestCase
     public function testRequestWithoutHeaders()
     {
         $expectedResponse = ['status' => 'error', 'msg' => trans('messages.app_key_missing')];
-        $response = $this->post('/api/api-status');
+        $response = $this->get('/api/api-status');
         $response->assertStatus(401);
         $response->assertJson($expectedResponse);
     }
@@ -33,7 +33,7 @@ class APIDesignTest extends TestCase
             'ShowBegins-APP-Secret' => 'SHOW_BEGINS_APP_SECRET',
         ];
         $expectedResponse = ['status' => 'success', 'msg' => trans('messages.api_success_status')];
-        $response = $this->post('/api/api-status', [], $headers);
+        $response = $this->get('/api/api-status', [], $headers);
         $response->assertStatus(200);
         $response->assertJson($expectedResponse);
     }
@@ -45,7 +45,7 @@ class APIDesignTest extends TestCase
             'ShowBegins-APP-Secret' => 'WRONG',
         ];
         $expectedResponse = ['status' => 'error', 'msg' => trans('messages.app_key_missing')];
-        $response = $this->post('/api/api-status', [], $headers);
+        $response = $this->get('/api/api-status', [], $headers);
         $response->assertStatus(401);
         $response->assertJson($expectedResponse);
     }

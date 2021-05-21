@@ -33,7 +33,12 @@ class LoginService
         if (!$query) {
             return false;
         }
-        return $query->id;
+        return [
+            'id'=>$query->id,
+            'name'=>$query->name,
+            'email'=>$query->email,
+            'mobile_no'=>$query->mobile_no,
+        ];
     }
 
     public function handleAccessTokens($userId)
