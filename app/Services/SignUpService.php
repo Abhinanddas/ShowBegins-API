@@ -7,6 +7,13 @@ use App\Services\CommonService as CommonService;
 
 class SignUpService
 {
+    private $userModel;
+
+    public function __construct(User $user)
+    {
+        $this->userModel = $user;
+    }
+
     public function signUpUser($params)
     {
 

@@ -61,7 +61,7 @@ class LoginController extends Controller
     public function logout(Request $request)
     {
         $userId = $request->session()->get('user')['id'];
-        // $this->loginService->logout($userId);
+        $this->loginService->logout($userId);
         return response()->json(['status' => 'success', 'msg' => trans('messages.logout_success')]);
     }
 }

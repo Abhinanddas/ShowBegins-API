@@ -10,9 +10,14 @@ use Illuminate\Support\Str;
 use App\Services\CommonService;
 use App\Services\SignUpService;
 use App\Services\LoginService;
+use App\Models\User as User;
 
 class APIDesignTest extends TestCase
 {
+
+    private $loginService;
+    private $signUpService;
+
     /**
      * A basic feature test example.
      *
@@ -29,11 +34,11 @@ class APIDesignTest extends TestCase
     public function testRequestWithHeaders()
     {
         $headers = [
-            'ShowBegins-APP-Key' => 'base64:S2wgFrGsp81CHpMbtKV6dMjAcFakrV5b1qWPzNG5+ss=',
-            'ShowBegins-APP-Secret' => 'SHOW_BEGINS_APP_SECRET',
+            'ShowBegins-APP-Key' => env('APP_KEY'),
+            'ShowBegins-APP-Secret' => env('APP_SECRET'),
         ];
         $expectedResponse = ['status' => 'success', 'msg' => trans('messages.api_success_status')];
-        $response = $this->get('/api/api-status', [], $headers);
+        $response = $this->get('/api/api-status', $headers);
         $response->assertStatus(200);
         $response->assertJson($expectedResponse);
     }
@@ -45,7 +50,7 @@ class APIDesignTest extends TestCase
             'ShowBegins-APP-Secret' => 'WRONG',
         ];
         $expectedResponse = ['status' => 'error', 'msg' => trans('messages.app_key_missing')];
-        $response = $this->get('/api/api-status', [], $headers);
+        $response = $this->get('/api/api-status', $headers);
         $response->assertStatus(401);
         $response->assertJson($expectedResponse);
     }
@@ -53,8 +58,8 @@ class APIDesignTest extends TestCase
     public function testWithoutSession()
     {
         $headers = [
-            'ShowBegins-APP-Key' => 'base64:S2wgFrGsp81CHpMbtKV6dMjAcFakrV5b1qWPzNG5+ss=',
-            'ShowBegins-APP-Secret' => 'SHOW_BEGINS_APP_SECRET',
+            'ShowBegins-APP-Key' => env('APP_KEY'),
+            'ShowBegins-APP-Secret' => env('APP_SECRET'),
         ];
         $expectedResponse = ['status' => 'error', 'msg' => trans('messages.access_token_missing')];
         $response = $this->post('/api/session-check', [], $headers);
@@ -65,8 +70,8 @@ class APIDesignTest extends TestCase
     public function testWithInvalidSession()
     {
         $headers = [
-            'ShowBegins-APP-Key' => 'base64:S2wgFrGsp81CHpMbtKV6dMjAcFakrV5b1qWPzNG5+ss=',
-            'ShowBegins-APP-Secret' => 'SHOW_BEGINS_APP_SECRET',
+            'ShowBegins-APP-Key' => env('APP_KEY'),
+            'ShowBegins-APP-Secret' => env('APP_SECRET'),
             'access-token' => 'Bearer xxx'
         ];
         $expectedResponse = ['status' => 'error', 'msg' => trans('messages.invalid_access_token')];
@@ -75,8 +80,10 @@ class APIDesignTest extends TestCase
         $response->assertJson($expectedResponse);
     }
 
-    public function testWithValidSession(SignUpService $signUpService, LoginService $loginService)
+    public function testWithValidSession()
     {
+        $signUpService = new SignUpService(new User());
+        $loginService = new LoginService(new User(), new CommonService());
         $email = Str::random(10) . '@gmail.com';
         $params = [
             'name' => Str::random(10),
@@ -92,8 +99,8 @@ class APIDesignTest extends TestCase
             'msg' => trans('messages.valid_session'),
         ];
         $headers = [
-            'ShowBegins-APP-Key' => 'base64:S2wgFrGsp81CHpMbtKV6dMjAcFakrV5b1qWPzNG5+ss=',
-            'ShowBegins-APP-Secret' => 'SHOW_BEGINS_APP_SECRET',
+            'ShowBegins-APP-Key' => env('APP_KEY'),
+            'ShowBegins-APP-Secret' => env('APP_SECRET'),
             'access-token' => 'Bearer ' . $accessToken['access_token'],
         ];
         $response = $this->post('/api/session-check', [], $headers);
