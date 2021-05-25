@@ -11,4 +11,6 @@ return [
     'logout_success' => 'User logged out successfully.',
     'api_success_status' => 'Api is Live.',
     'valid_session' => 'Valid session.',
+    'insert_success' => ':item saved successfully.',
+    'insert_failure' => ':item save action failed.',
 ];

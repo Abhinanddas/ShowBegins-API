@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 
-class Movie extends Model
+class Screen extends Model
 {
-    protected $table = 'movies';
+    protected $table = 'screens';
 
     public function __construct()
     {
@@ -16,29 +16,21 @@ class Movie extends Model
     }
 
 
-    public function saveMovie($data)
+    public function saveScreen($data)
     {
         try {
             return $this->tableObject->insertGetId($data);
         } catch (\Exception $e) {
+            dump($e);die;
             return false;
         }
     }
 
-    public function listAllMovies()
+    public function listAllScreens()
     {
         return $this->tableObject
             ->select('id', 'name')
             ->where('is_deleted', false)
-            ->get();
-    }
-
-    public function listActiveMovies()
-    {
-        return $this->tableObject
-            ->select('id', 'name')
-            ->where('is_deleted', false)
-            ->where('is_active', true)
             ->get();
     }
 }

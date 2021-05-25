@@ -26,5 +26,13 @@ Route::middleware(['session.validator'])->group(
         Route::post('get-referesh-token', 'LoginController@getRefreshToken');
         Route::post('logout','LoginController@logout');
         Route::post('session-check','ApiController@validateSession');
+        Route::post('add-movie','MovieController@addMovie');
+        Route::post('list-all-movies','MovieController@listAllMovies');
+        Route::post('list-active-movies','MovieController@listActiveMovies');
+        Route::post('add-screen','ScreenController@addScreen');
+        Route::post('list-all-screens','ScreenController@listAllScreens');
+        Route::post('add-show','ShowController@addShow');
+        Route::post('list-shows','ScreenController@listShows');
+
     }
 );
