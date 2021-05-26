@@ -13,4 +13,6 @@ return [
     'valid_session' => 'Valid session.',
     'insert_success' => ':item saved successfully.',
     'insert_failure' => ':item save action failed.',
+    'invalid_input' => 'Please provide valid values.',
+    'invalid_show_timing' => 'Please sumbit valid show timings.',
 ];

@@ -32,7 +32,8 @@ Route::middleware(['session.validator'])->group(
         Route::post('add-screen','ScreenController@addScreen');
         Route::post('list-all-screens','ScreenController@listAllScreens');
         Route::post('add-show','ShowController@addShow');
-        Route::post('list-shows','ScreenController@listShows');
+        Route::post('list-active-shows','ScreenController@listActiveShows');
+        Route::post('list-all-shows','ShowController@listAllShows');
 
     }
 );
