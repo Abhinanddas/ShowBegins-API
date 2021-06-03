@@ -3,7 +3,7 @@
 use App\Http\Middleware\SessionValidator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\PricingController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -32,8 +32,9 @@ Route::middleware(['session.validator'])->group(
         Route::post('add-screen','ScreenController@addScreen');
         Route::post('list-all-screens','ScreenController@listAllScreens');
         Route::post('add-show','ShowController@addShow');
-        Route::post('list-active-shows','ScreenController@listActiveShows');
+        Route::post('list-active-shows','ShowController@listActiveShows');
         Route::post('list-all-shows','ShowController@listAllShows');
-
+        Route::apiResource('pricing', 'PricingController');
+        Route::get('ticket-charge','PricingController@getTicketCharge');
     }
 );

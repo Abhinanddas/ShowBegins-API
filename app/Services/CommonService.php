@@ -22,4 +22,8 @@ class CommonService
         return hash("md5", $password);
     }
 
+    public function calculatePercentage($total, $whole){
+        return $total *($whole/100);
+    }
+
 }

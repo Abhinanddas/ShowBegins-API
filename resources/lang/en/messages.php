@@ -15,4 +15,6 @@ return [
     'insert_failure' => ':item save action failed.',
     'invalid_input' => 'Please provide valid values.',
     'invalid_show_timing' => 'Please sumbit valid show timings.',
+    'invalid_ticket_charge_input' => 'Please submit a valid input',
+    'ticket_charge_calculation_success' => 'Ticket charge calculated successfully',
 ];

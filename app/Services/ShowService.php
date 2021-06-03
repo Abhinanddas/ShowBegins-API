@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Show as Show;
 use App\Services\CommonService as CommonService;
 use DateTime;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Validator;
 
 class ShowService
@@ -26,7 +27,7 @@ class ShowService
                 foreach ($param['showTime'] as $showTime) {
                     $data['movie_id'] = (int)$movie;
                     $data['screen_id'] = (int)$screen;
-                    $data['show_time'] = DateTime::createFromFormat('U', $showTime);
+                    $data['show_time'] = $showTime;
                     array_push($dataArray, $data);
                 }
             }
@@ -71,7 +72,8 @@ class ShowService
 
             $showTimeArray = [];
             foreach ($param['time'] as $time) {
-                $showTime = strtotime($param['date'] . ' ' . $time);
+                // $showTime = strtotime($param['date'] . ' ' . $time);
+                $showTime = DateTime::createFromFormat('Y-m-d H:i', $param['date'] . '' . $time);
                 array_push($showTimeArray, $showTime);
             }
             $inputArray['showTime'] = $showTimeArray;
@@ -83,7 +85,7 @@ class ShowService
     public function validateShowTimings($params)
     {
         $isValid = true;
-        $now = strtotime('now');
+        $now = new DateTime('now');
         foreach ($params as $param) {
 
             foreach ($param['showTime'] as $showTime) {
@@ -94,5 +96,38 @@ class ShowService
             }
         }
         return $isValid;
+    }
+
+    public function listActiveShows()
+    {
+        $now = new DateTime('now');
+        $now->modify('-1 hour');
+        $result =  $this->showModel->getAllActiveShows($now);
+        return $this->processListActiveShowsData($result);
+    }
+
+    public function processListActiveShowsData($results)
+    {
+        $movieArray = [];
+
+        foreach ($results as $result) {
+            $movieId = $result->movie_id;
+            if (!isset($movieArray[$movieId])) {
+                $movieArray[$movieId]['movie_id'] = $movieId;
+                $movieArray[$movieId]['movie_name'] = $result->movie_name;
+            }
+            $screenId = $result->screen_id;
+            if (!isset($movieArray[$movieId]['screens']['screen_id'])) {
+                $movieArray[$movieId]['screens'][$screenId]['screen_id'] = $screenId;
+                $movieArray[$movieId]['screens'][$screenId]['screen_name'] = $result->screen_name;
+            }
+            $showTime = new DateTime($result->show_time);
+            $movieArray[$movieId]['screens'][$screenId]['shows'][] = ['show_id' => $result->show_id, 'show_time' => $showTime->format('d-m h:i a')];
+        }
+
+        foreach($movieArray as $index=> $movie){
+            $movieArray[$index]['screens']=array_values($movie['screens']);
+        }
+        return array_values($movieArray);
     }
 }
