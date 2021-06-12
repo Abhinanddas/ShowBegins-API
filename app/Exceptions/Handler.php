@@ -2,7 +2,10 @@
 
 namespace App\Exceptions;
 
+use App\Http\Helper;
+use ErrorException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 
@@ -52,12 +55,33 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception)
     {
         if ($exception instanceof ModelNotFoundException && $request->wantsJson()) {
-            return response()->json(['status' => 'error', 'msg' => 'Not found.'], 404);
+            return Helper::prettyApiResponse('Not found', 'error', 404);
         }
 
         if ($this->isHttpException($exception)) {
-            return response()->json(['status' => 'error', 'msg' => 'Not found.'], 404);
+            return Helper::prettyApiResponse('Not found', 'error', 404);
         }
         return parent::render($request, $exception);
+
+        if (!isset($request->httpReq) && $exception instanceof \Illuminate\Validation\ValidationException) {
+            return  Helper::prettyApiResponse($exception->errors(), 'error', 422);
+        }
+
+        if($exception instanceof ErrorException){
+        }
+
+        $errorMessage =null;
+        if ($exception instanceof QueryException) {
+            $errorMessage = trans('validation.queryException');
+        } else {
+            if ($exception instanceof ModelNotFoundException) {
+                $errorMessage =  trans('validation.no-model');
+            } else {
+                $errorMessage = $exception->getMessage() ?? trans('validation.no.model');
+            }
+        }
+        if (isset($errorMessage)) {
+            return Helper::prettyApiResponse($errorMessage, 'error', 400);
+        }
     }
 }

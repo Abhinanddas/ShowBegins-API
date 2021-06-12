@@ -7,14 +7,19 @@ use App\Services\CommonService as CommonService;
 use DateTime;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Validator;
+use App\Repositories\ShowRepository;
+use App\Repositories\TicketRepository;
 
 class ShowService
 {
     private $showModel;
+    protected $showRepo;
 
-    public function __construct(Show $show)
+    public function __construct(Show $show, ShowRepository $showRepo, TicketRepository $ticketRepo)
     {
         $this->showModel = $show;
+        $this->showRepo = $showRepo;
+        $this->ticketRepo = $ticketRepo;
     }
 
     public function addShow($params)
@@ -129,5 +134,21 @@ class ShowService
             $movieArray[$index]['screens']=array_values($movie['screens']);
         }
         return array_values($movieArray);
+    }
+
+    public function getShowDetails($request){
+
+        $request->validate([
+            'showId' => 'required',
+        ]);
+
+        return $this->showRepo->getShowDetails($request->showId);
+    }
+    public function getShowTicketDetails($request){
+        $request->validate([
+            'showId' => 'required',
+        ]);
+
+        return $this->ticketRepo->getShowTicketDetails($request->showId);
     }
 }

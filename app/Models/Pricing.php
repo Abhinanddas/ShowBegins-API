@@ -39,7 +39,7 @@ class Pricing extends Model
     public function getPricing($isBasic = false)
     {
         return $this->tableObject
-            ->select('name as name', 'value as value', 'is_value_in_percentage as is_percentage')
+            ->select('id as id','name as name', 'value as value', 'is_value_in_percentage as is_percentage')
             ->where('is_base_ticket_charge', $isBasic)
             ->where('is_deleted', false)
             ->where('is_active', true)

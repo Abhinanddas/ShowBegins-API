@@ -41,7 +41,7 @@ class PricingService
         $priceArray = [];
         foreach ($basePrices as $price) {
             $baseCharge += $num * $price->value;
-            $priceArray[$price->name] = $baseCharge;
+            $priceArray[] = ['id' => $price->id, 'name' => $price->name, 'amount' => $baseCharge];
             $totalCharge += $baseCharge;
         }
         $model = new Pricing();
@@ -52,7 +52,7 @@ class PricingService
             } else {
                 $amount = $charge->value * $num;
             }
-            $priceArray[$charge->name] = $amount;
+            $priceArray[] = ['id' => $charge->id, 'name' => $charge->name, 'amount' => $amount];
             $totalCharge += $amount;
         }
         return ['total_amount' => $totalCharge, 'pricing' => $priceArray];

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Helper;
 use Illuminate\Http\Request;
 use App\Services\CommonService;
 use App\Services\ShowService;
@@ -9,26 +10,33 @@ use Illuminate\Support\Facades\Validator;
 
 class ShowController extends Controller
 {
-    public function addShow(Request $request, ShowService $showService)
+    protected $showService;
+    protected $commonService;
+    public function __construct(ShowService $showService, CommonService $commonService)
+    {
+        $this->showService = $showService;
+        $this->commonService = $commonService;
+    }
+    public function addShow(Request $request)
     {
 
         $params = $request->all();
 
-        $isValid = $showService->validateShowParams($params);
+        $isValid = $this->showService->validateShowParams($params);
 
         if (!$isValid) {
             return response()->json(['status' => 'error', 'msg' => trans('messages.invalid_input')]);
         }
 
-        $params = $showService->processShowTimeParam($params);
+        $params = $this->showService->processShowTimeParam($params);
 
-        $isValidShowTimings = $showService->validateShowTimings($params);
+        $isValidShowTimings = $this->showService->validateShowTimings($params);
 
         if (!$isValidShowTimings) {
             return response()->json(['status' => 'error', 'msg' => trans('messages.invalid_show_timing')]);
         }
 
-        $addShow = $showService->addShow($params);
+        $addShow = $this->showService->addShow($params);
 
         if (!$addShow) {
             return response()->json(['status' => 'error', 'msg' => trans('messages.insert_failure', ['item' => 'Show'])]);
@@ -37,15 +45,24 @@ class ShowController extends Controller
         return response()->json(['status' => 'success', 'msg' => trans('messages.insert_success', ['item' => 'Show'])]);
     }
 
-    public function listActiveShows(Request $request, ShowService $showService)
+    public function listActiveShows(Request $request)
     {
 
-        return response()->json(['status' => 'success', 'data' => $showService->listActiveShows()]);
+        return response()->json(['status' => 'success', 'data' => $this->showService->listActiveShows()]);
     }
 
-    public function listAllShows(Request $request, ShowService $showService)
+    public function listAllShows(Request $request)
     {
 
-        return response()->json(['status' => 'success', 'data' => $showService->listAllShows()]);
+        return response()->json(['status' => 'success', 'data' => $this->showService->listAllShows()]);
+    }
+
+    public function getShowDetails(Request $request)
+    {
+        return Helper::prettyApiResponse(trans('messages.shows.show_details_success'),'success',$this->showService->getShowDetails($request));
+    }
+    
+    public function getShowTicketDetails(Request $request){
+        return Helper::prettyApiResponse(trans('messages.shows.ticket_details_success'),'success',$this->showService->getShowTicketDetails($request));
     }
 }

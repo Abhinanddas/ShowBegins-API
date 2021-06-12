@@ -36,5 +36,9 @@ Route::middleware(['session.validator'])->group(
         Route::post('list-all-shows','ShowController@listAllShows');
         Route::apiResource('pricing', 'PricingController');
         Route::get('ticket-charge','PricingController@getTicketCharge');
+        Route::apiResource('purchase-order', 'PurchaseOrderController');
+        Route::apiResource('ticket', 'TicketController');
+        Route::get('show-details','ShowController@getShowDetails');
+        Route::get('show-ticket-details','ShowController@getShowTicketDetails');
     }
 );
