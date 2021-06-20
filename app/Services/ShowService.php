@@ -142,7 +142,7 @@ class ShowService
             'showId' => 'required',
         ]);
 
-        return $this->showRepo->getShowDetails($request->showId);
+        $showData = $this->showRepo->getShowDetails($request->showId);
     }
     public function getShowTicketDetails($request){
         $request->validate([

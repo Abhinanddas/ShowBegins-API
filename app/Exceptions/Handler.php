@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use App\Http\Helper;
 use ErrorException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Exceptions\LoginFailException;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
@@ -61,16 +62,26 @@ class Handler extends ExceptionHandler
         if ($this->isHttpException($exception)) {
             return Helper::prettyApiResponse('Not found', 'error', 404);
         }
-        return parent::render($request, $exception);
 
         if (!isset($request->httpReq) && $exception instanceof \Illuminate\Validation\ValidationException) {
-            return  Helper::prettyApiResponse($exception->errors(), 'error', 422);
+            return  Helper::prettyApiResponse($exception->errors(), 'error', [], 422);
         }
 
-        if($exception instanceof ErrorException){
+        if ($exception instanceof ErrorException) {
+            return Helper::prettyApiResponse($exception->getMessage(), 'error', [], 500);
         }
-
-        $errorMessage =null;
+        
+        if ($exception instanceof LoginFailException) {
+            return Helper::prettyApiResponse(
+                trans('messages.login_failure'),
+                'error',
+                [],
+                401
+            );
+        }
+        
+        
+        $errorMessage = null;
         if ($exception instanceof QueryException) {
             $errorMessage = trans('validation.queryException');
         } else {
@@ -81,7 +92,8 @@ class Handler extends ExceptionHandler
             }
         }
         if (isset($errorMessage)) {
-            return Helper::prettyApiResponse($errorMessage, 'error', 400);
+            return Helper::prettyApiResponse($errorMessage, 'error', [], 400);
         }
+        return parent::render($request, $exception);
     }
 }

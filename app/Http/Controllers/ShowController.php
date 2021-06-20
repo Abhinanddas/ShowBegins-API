@@ -54,7 +54,7 @@ class ShowController extends Controller
     public function listAllShows(Request $request)
     {
 
-        return response()->json(['status' => 'success', 'data' => $this->showService->listAllShows()]);
+        return response()->json(['status' => 'success', 'data' => $this->showService->listActiveShows()]);
     }
 
     public function getShowDetails(Request $request)

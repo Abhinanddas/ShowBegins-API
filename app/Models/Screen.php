@@ -21,7 +21,6 @@ class Screen extends Model
         try {
             return $this->tableObject->insertGetId($data);
         } catch (\Exception $e) {
-            dump($e);die;
             return false;
         }
     }
@@ -29,8 +28,9 @@ class Screen extends Model
     public function listAllScreens()
     {
         return $this->tableObject
-            ->select('id', 'name')
+            ->select('id', 'name','seating_capacity')
             ->where('is_deleted', false)
+            ->orderBy('id','desc')
             ->get();
     }
 }

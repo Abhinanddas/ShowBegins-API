@@ -23,25 +23,6 @@ class User extends Model
         }
     }
 
-    public function login($email, $password)
-    {
-        return $this->tableObject
-            ->select('id','email','name','mobile_no')
-            ->where('email', $email)
-            ->where('password', $password)
-            ->first();
-    }
-
-    public function updateAccessTokens($userId, $accessToken, $refreshToken)
-    {
-        return $this->tableObject
-            ->where('id', $userId)
-            ->update([
-                'access_token' => $accessToken,
-                'refresh_token' => $refreshToken,
-            ]);
-    }
-
     public static function findUserByAccessToken($accessToken)
     {
         return DB::table('users')
@@ -57,6 +38,7 @@ class User extends Model
             ->update([
                 'access_token' => null,
                 'refresh_token' => null,
+                'token_expires_at'=>null,
             ]);
     }
 }

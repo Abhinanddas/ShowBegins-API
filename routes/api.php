@@ -21,19 +21,19 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('login', 'LoginController@login');
 Route::post('signup', 'SignUpController@signup');
 Route::get('api-status','ApiController@checkApiStatus');
+Route::post('logout','LoginController@logout');
 Route::middleware(['session.validator'])->group(
     function () {
         Route::post('get-referesh-token', 'LoginController@getRefreshToken');
-        Route::post('logout','LoginController@logout');
         Route::post('session-check','ApiController@validateSession');
-        Route::post('add-movie','MovieController@addMovie');
-        Route::post('list-all-movies','MovieController@listAllMovies');
+        Route::post('movies','MovieController@addMovie');
+        Route::get('movies','MovieController@listAllMovies');
         Route::post('list-active-movies','MovieController@listActiveMovies');
-        Route::post('add-screen','ScreenController@addScreen');
-        Route::post('list-all-screens','ScreenController@listAllScreens');
+        Route::post('screens','ScreenController@addScreen');
+        Route::get('screens','ScreenController@listAllScreens');
         Route::post('add-show','ShowController@addShow');
         Route::post('list-active-shows','ShowController@listActiveShows');
-        Route::post('list-all-shows','ShowController@listAllShows');
+        Route::get('shows','ShowController@listAllShows');
         Route::apiResource('pricing', 'PricingController');
         Route::get('ticket-charge','PricingController@getTicketCharge');
         Route::apiResource('purchase-order', 'PurchaseOrderController');

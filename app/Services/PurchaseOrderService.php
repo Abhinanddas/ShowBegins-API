@@ -3,7 +3,8 @@
 namespace App\Services;
 
 use App\Models\PurchaseOrder as PurchaseOrder;
-use App\Repositories\PurchaseOrderDetailsRepository as PurchaseOrderDetailsRepository;
+use App\Repositories\PurchaseOrderDetailsRepository;
+use App\Repositories\PurchaseOrderRepository;
 use App\Services\CommonService as CommonService;
 use App\Services\TicketService as TicketService;
 use App\Services\PricingService as PricingService;
@@ -16,19 +17,22 @@ class PurchaseOrderService
     private $ticketService;
     private $priceService;
     private $purchaseOrderDetailRepository;
+    private $purchaseOrderRepo;
 
     public function __construct(
         PurchaseOrderDetailsRepository $purchaseOrderDetailRepository,
         PurchaseOrder $purchaseOrderModel,
         CommonService $commonService,
         TicketService $ticketService,
-        PricingService $pricingService
+        PricingService $pricingService,
+        PurchaseOrderRepository $purchaseOrderRepo
     ) {
         $this->purchaseOrderModel = $purchaseOrderModel;
         $this->commonService = $commonService;
         $this->ticketService = $ticketService;
         $this->pricingService = $pricingService;
         $this->purchaseOrderDetailRepository = $purchaseOrderDetailRepository;
+        $this->purchaseOrderRepo = $purchaseOrderRepo;
     }
 
     public function add($params)
@@ -83,5 +87,13 @@ class PurchaseOrderService
             ];
         }
         return $this->purchaseOrderDetailRepository->save($data);
+    }
+
+    public function getPurchaseHistory($request){
+
+        $request->validate([
+            'show_id'=>'required',
+        ]);
+        return $this->purchaseOrderRepo->getPurchaseHistory($request->show_id);
     }
 }

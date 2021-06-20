@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Helper;
 use App\Services\CommonServices;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -20,30 +21,11 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        $params = $request->all();
-        $requiredFields = [
-            'email' => "bail|required|email",
-            'password' => 'required',
-        ];
-        $validator = Validator::make($params, $requiredFields);
-
-        if ($validator->fails()) {
-            return response()->json(['status' => 'erorr', 'msg' => CommonService::getErrorMessagesFromValidator($validator->errors())]);
-        }
-
-        $userData = $this->loginService->login($params['email'], $params['password']);
-
-        if (!$userData) {
-            return response()->json(['status' => 'error', 'msg' => trans('messages.login_failure')]);
-        }
-
-        $accessTokens = $this->loginService->handleAccessTokens($userData['id']);
-        $data = [
-            'user_data' => $userData,
-            'access_token' => $accessTokens['access_token'],
-            'refresh_token' => $accessTokens['refresh_token'],
-        ];
-        return response()->json(['status' => 'success', 'msg' => trans('messages.login_success'), 'data' => $data]);
+        return Helper::prettyApiResponse(
+            trans('messages.login_success'),
+            'success',
+            $this->loginService->login($request)
+        );
     }
 
     public function getRefreshToken(Request $request)
@@ -54,6 +36,7 @@ class LoginController extends Controller
             'user_id' => $userId,
             'access_token' => $accessTokens['access_token'],
             'refresh_token' => $accessTokens['refresh_token'],
+            'token_expires_at' => $accessTokens['expires_at'],
         ];
         return response()->json(['status' => 'success', 'data' => $data]);
     }

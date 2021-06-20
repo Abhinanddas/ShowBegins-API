@@ -23,9 +23,13 @@ class PurchaseOrderController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        return Helper::prettyApiResponse(
+            trans('messages.list_success',['item'=>'Purchase order']),
+            $this->purchaseOrderService->getPurchaseHistory($request),
+            'success'
+        );
     }
 
     /**

@@ -19,7 +19,8 @@ return [
     'ticket_charge_calculation_success' => 'Ticket charge calculated successfully.',
     'seats_unavailable' => 'Selected seats unavailable for booking.',
     'shows' => [
-        'show_details_success' => 'Show details listed successfully',
-        'ticket_details_success' => 'Show details listed successfully',
+        'show_details_success' => 'Show details listed successfully.',
+        'ticket_details_success' => 'Show details listed successfully.',
     ],
+    'list_success' => ':item data listed successfully.',
 ];
