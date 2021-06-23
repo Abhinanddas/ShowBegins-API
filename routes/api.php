@@ -31,14 +31,15 @@ Route::middleware(['session.validator'])->group(
         Route::post('list-active-movies','MovieController@listActiveMovies');
         Route::post('screens','ScreenController@addScreen');
         Route::get('screens','ScreenController@listAllScreens');
-        Route::post('add-show','ShowController@addShow');
-        Route::post('list-active-shows','ShowController@listActiveShows');
-        Route::get('shows','ShowController@listAllShows');
+        Route::post('shows','ShowController@addShow');
+        Route::get('shows','ShowController@index');
+        Route::get('show-details/{showId}','ShowController@getShowDetails');
+        Route::get('dashboard/shows','ShowController@getShowsForDashboard');
         Route::apiResource('pricing', 'PricingController');
-        Route::get('ticket-charge','PricingController@getTicketCharge');
+        Route::apiResource('purchases', 'PurchaseOrderController');
+        Route::get('ticket-charge/{num}','PricingController@getTicketCharge');
         Route::apiResource('purchase-order', 'PurchaseOrderController');
         Route::apiResource('ticket', 'TicketController');
-        Route::get('show-details','ShowController@getShowDetails');
-        Route::get('show-ticket-details','ShowController@getShowTicketDetails');
+        Route::get('tickets/booked/{showId}','ShowController@getBookedSeatDetails');
     }
 );

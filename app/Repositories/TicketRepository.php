@@ -7,7 +7,7 @@ use App\Models\Ticket;
 class TicketRepository
 {
 
-    public function getShowTicketDetails($showId)
+    public function getBookedSeatDetails($showId)
     {
 
         return [

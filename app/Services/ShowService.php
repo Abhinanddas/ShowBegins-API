@@ -9,21 +9,28 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Validator;
 use App\Repositories\ShowRepository;
 use App\Repositories\TicketRepository;
+use App\Repositories\ScreenRepository;
+use App\Services\ScreenService;
 
 class ShowService
 {
     private $showModel;
     protected $showRepo;
+    protected $screenRepo;
+    protected $screenService;
 
-    public function __construct(Show $show, ShowRepository $showRepo, TicketRepository $ticketRepo)
+    public function __construct(Show $show, ShowRepository $showRepo, TicketRepository $ticketRepo, ScreenService $screenService, ScreenRepository $screenRepo)
     {
         $this->showModel = $show;
         $this->showRepo = $showRepo;
         $this->ticketRepo = $ticketRepo;
+        $this->screenRepo = $screenRepo;
+        $this->screenService = $screenService;
     }
 
     public function addShow($params)
     {
+        $seatCount = $this->fetchSeatCount($params);
         $dataArray = [];
         foreach ($params as $param) {
             $movie = $param['movie'];
@@ -33,16 +40,15 @@ class ShowService
                     $data['movie_id'] = (int)$movie;
                     $data['screen_id'] = (int)$screen;
                     $data['show_time'] = $showTime;
+                    $data['number_of_seats'] = $seatCount[$data['screen_id']];
+                    $data['tickets_sold'] = 0;
+                    $data['booking_status'] = config('constants.show_status.none');
+
                     array_push($dataArray, $data);
                 }
             }
         }
         return $this->showModel->saveShow($dataArray);
-    }
-
-    public function listShows()
-    {
-        return $this->movieModel->listAllMovies();
     }
 
     public function validateShowParams($params)
@@ -77,7 +83,6 @@ class ShowService
 
             $showTimeArray = [];
             foreach ($param['time'] as $time) {
-                // $showTime = strtotime($param['date'] . ' ' . $time);
                 $showTime = DateTime::createFromFormat('Y-m-d H:i', $param['date'] . '' . $time);
                 array_push($showTimeArray, $showTime);
             }
@@ -103,11 +108,16 @@ class ShowService
         return $isValid;
     }
 
-    public function listActiveShows()
+    public function listShows($request)
+    {
+        return $this->showRepo->getShows(false);
+    }
+
+    public function getShowsForDashboard()
     {
         $now = new DateTime('now');
         $now->modify('-1 hour');
-        $result =  $this->showModel->getAllActiveShows($now);
+        $result =  $this->showRepo->getShows(true, $now);
         return $this->processListActiveShowsData($result);
     }
 
@@ -127,28 +137,67 @@ class ShowService
                 $movieArray[$movieId]['screens'][$screenId]['screen_name'] = $result->screen_name;
             }
             $showTime = new DateTime($result->show_time);
-            $movieArray[$movieId]['screens'][$screenId]['shows'][] = ['show_id' => $result->show_id, 'show_time' => $showTime->format('d-m h:i a')];
+            $movieArray[$movieId]['screens'][$screenId]['shows'][] = [
+                'show_id' => $result->show_id,
+                'show_time' => $showTime->format('d-m h:i a'),
+                'status' => $result->booking_status,
+            ];
         }
 
-        foreach($movieArray as $index=> $movie){
-            $movieArray[$index]['screens']=array_values($movie['screens']);
+        foreach ($movieArray as $index => $movie) {
+            $movieArray[$index]['screens'] = array_values($movie['screens']);
         }
         return array_values($movieArray);
     }
 
-    public function getShowDetails($request){
-
-        $request->validate([
-            'showId' => 'required',
-        ]);
-
-        $showData = $this->showRepo->getShowDetails($request->showId);
+    public function getShowDetails($showId)
+    {
+        return $this->showRepo->getShowDetails($showId);
     }
-    public function getShowTicketDetails($request){
-        $request->validate([
-            'showId' => 'required',
-        ]);
+    public function getBookedSeatDetails($showId)
+    {
+        return $this->ticketRepo->getBookedSeatDetails($showId);
+    }
 
-        return $this->ticketRepo->getShowTicketDetails($request->showId);
+    public function fetchSeatCount($params)
+    {
+        $screenIds = [];
+        foreach ($params as $param) {
+            $screenIds = array_merge($screenIds, $param['screens']);
+        }
+        $screenIds = array_unique($screenIds);
+        $screenCountData = $this->screenRepo->getScreenSeatCount($screenIds);
+        $screenIdCountArray = [];
+        foreach ($screenCountData as $data) {
+            $screenIdCountArray[$data->id] = $data->seat_count;
+        }
+        return $screenIdCountArray;
+    }
+
+    public function calculateShowStatus($ticketsSold, $totalTickets)
+    {
+
+        dd("d");
+        $percentageOfTicketSold = ($ticketsSold / $totalTickets) * 100;
+
+        if ($percentageOfTicketSold == 0) {
+            return config('constants.show_status.none');
+        }
+
+        if ($percentageOfTicketSold <= 25) {
+            return config('constants.show_status.quarter');
+        }
+
+        if ($percentageOfTicketSold <= 50) {
+            return config('constants.show_status.half');
+        }
+
+        if ($percentageOfTicketSold <= 75) {
+            return config('constants.show_status.triquarter');
+        }
+
+        if ($percentageOfTicketSold == 100) {
+            return config('constants.show_status.full');
+        }
     }
 }

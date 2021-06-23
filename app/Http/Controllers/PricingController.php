@@ -84,10 +84,8 @@ class PricingController extends Controller
         //
     }
 
-    public function getTicketCharge(Request $request)
+    public function getTicketCharge(Request $request, $num)
     {
-
-        $num = (int) $request->query('num');
 
         if (!$num) {
             return Helper::prettyApiResponse(trans('messages.invalid_ticket_charge_input'), 'error');

@@ -9,7 +9,16 @@ class Show extends Model
 {
     protected $table = 'shows';
 
-    protected $dates = ['show_time'];
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d',
+        'updated_at' => 'datetime:Y-m-d',
+        'show_time' => 'datetime:d-m-Y h:i:s'
+    ];
 
     public function __construct()
     {
@@ -24,19 +33,5 @@ class Show extends Model
         } catch (\Exception $e) {
             return false;
         }
-    }
-
-    public function getAllActiveShows($fromShowTime)
-    {
-        return $this->tableObject
-            ->select('shows.id as show_id', 'movies.id as movie_id', 'movies.name as movie_name', 'screens.name as screen_name', 'shows.show_time as show_time', 'shows.screen_id as screen_id')
-            ->where('screens.is_deleted', false)
-            // ->where('shows.show_time', '>=', $fromShowTime)
-            ->leftJoin('movies', 'shows.movie_id', '=', 'movies.id')
-            ->leftJoin('screens', 'shows.screen_id', '=', 'screens.id')
-            ->orderBy('movie_id', 'desc')
-            ->orderBy('show_time', 'asc')
-            ->orderBy('screen_id', 'asc')
-            ->get();
     }
 }

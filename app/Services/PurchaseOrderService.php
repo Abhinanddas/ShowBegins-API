@@ -9,6 +9,7 @@ use App\Services\CommonService as CommonService;
 use App\Services\TicketService as TicketService;
 use App\Services\PricingService as PricingService;
 use App\Http\Helper;
+use App\Repositories\ShowRepository;
 
 class PurchaseOrderService
 {
@@ -18,6 +19,7 @@ class PurchaseOrderService
     private $priceService;
     private $purchaseOrderDetailRepository;
     private $purchaseOrderRepo;
+    private $showRepo;
 
     public function __construct(
         PurchaseOrderDetailsRepository $purchaseOrderDetailRepository,
@@ -25,7 +27,8 @@ class PurchaseOrderService
         CommonService $commonService,
         TicketService $ticketService,
         PricingService $pricingService,
-        PurchaseOrderRepository $purchaseOrderRepo
+        PurchaseOrderRepository $purchaseOrderRepo,
+        ShowRepository $showRepo
     ) {
         $this->purchaseOrderModel = $purchaseOrderModel;
         $this->commonService = $commonService;
@@ -33,10 +36,12 @@ class PurchaseOrderService
         $this->pricingService = $pricingService;
         $this->purchaseOrderDetailRepository = $purchaseOrderDetailRepository;
         $this->purchaseOrderRepo = $purchaseOrderRepo;
+        $this->showRepo = $showRepo;
     }
 
     public function add($params)
     {
+        $this->updateShowStatistics($params['show_id']);
 
         $isSeatsAvailable = $this->checkSeatsAvailableForBooking($params['selected_seats'], $params['show_id']);
 
@@ -92,8 +97,13 @@ class PurchaseOrderService
     public function getPurchaseHistory($request){
 
         $request->validate([
-            'show_id'=>'required',
+            'showId'=>'required',
         ]);
-        return $this->purchaseOrderRepo->getPurchaseHistory($request->show_id);
+        return $this->purchaseOrderRepo->getPurchaseHistory($request->showId);
+    }
+
+    public function updateShowStatistics($showId){
+
+        $this->showRepo->updateShowStatistics($showId);
     }
 }

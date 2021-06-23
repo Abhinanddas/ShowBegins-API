@@ -45,24 +45,25 @@ class ShowController extends Controller
         return response()->json(['status' => 'success', 'msg' => trans('messages.insert_success', ['item' => 'Show'])]);
     }
 
-    public function listActiveShows(Request $request)
+    public function index(Request $request)
     {
 
-        return response()->json(['status' => 'success', 'data' => $this->showService->listActiveShows()]);
+        return response()->json(['status' => 'success', 'data' => $this->showService->listShows($request)]);
     }
 
-    public function listAllShows(Request $request)
+    public function getShowsForDashboard()
     {
-
-        return response()->json(['status' => 'success', 'data' => $this->showService->listActiveShows()]);
+        return response()->json(['status' => 'success', 'data' => $this->showService->getShowsForDashboard()]);
     }
 
-    public function getShowDetails(Request $request)
+    public function getShowDetails(Request $request, $showId)
     {
-        return Helper::prettyApiResponse(trans('messages.shows.show_details_success'),'success',$this->showService->getShowDetails($request));
+        return Helper::prettyApiResponse(trans('messages.shows.show_details_success'), 'success', $this->showService->getShowDetails($showId));
     }
-    
-    public function getShowTicketDetails(Request $request){
-        return Helper::prettyApiResponse(trans('messages.shows.ticket_details_success'),'success',$this->showService->getShowTicketDetails($request));
+
+    public function getBookedSeatDetails(Request $request, $showId)
+    {
+        return Helper::prettyApiResponse(trans('messages.shows.ticket_details_success'), 'success', $this->showService->getBookedSeatDetails($showId));
     }
+
 }

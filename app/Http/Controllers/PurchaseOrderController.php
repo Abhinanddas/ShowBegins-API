@@ -27,8 +27,8 @@ class PurchaseOrderController extends Controller
     {
         return Helper::prettyApiResponse(
             trans('messages.list_success',['item'=>'Purchase order']),
-            $this->purchaseOrderService->getPurchaseHistory($request),
-            'success'
+            'success',
+            $this->purchaseOrderService->getPurchaseHistory($request)
         );
     }
 
@@ -40,6 +40,7 @@ class PurchaseOrderController extends Controller
      */
     public function store(Request $request)
     {
+        dd("Yes");
         $params = $request->all();
         $requiredFields = [
             'show_id' => 'required',
@@ -52,6 +53,7 @@ class PurchaseOrderController extends Controller
         if ($validator->fails()) {
             Helper::prettyApiResponse($this->commonService->getErrorMessagesFromValidator($validator->errors()), 'error');
         }
+
         return $this->purchaseOrderService->add($params);
     }
 
