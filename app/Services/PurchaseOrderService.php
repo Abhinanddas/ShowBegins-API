@@ -10,7 +10,7 @@ use App\Services\TicketService as TicketService;
 use App\Services\PricingService as PricingService;
 use App\Http\Helper;
 use App\Repositories\ShowRepository;
-
+use App\Services\ShowService;
 class PurchaseOrderService
 {
     private $purchaseOrderModel;
@@ -20,6 +20,7 @@ class PurchaseOrderService
     private $purchaseOrderDetailRepository;
     private $purchaseOrderRepo;
     private $showRepo;
+    protected $showService;
 
     public function __construct(
         PurchaseOrderDetailsRepository $purchaseOrderDetailRepository,
@@ -28,7 +29,8 @@ class PurchaseOrderService
         TicketService $ticketService,
         PricingService $pricingService,
         PurchaseOrderRepository $purchaseOrderRepo,
-        ShowRepository $showRepo
+        ShowRepository $showRepo,
+        ShowService $showService
     ) {
         $this->purchaseOrderModel = $purchaseOrderModel;
         $this->commonService = $commonService;
@@ -37,12 +39,11 @@ class PurchaseOrderService
         $this->purchaseOrderDetailRepository = $purchaseOrderDetailRepository;
         $this->purchaseOrderRepo = $purchaseOrderRepo;
         $this->showRepo = $showRepo;
+        $this->showService = $showService;
     }
 
     public function add($params)
     {
-        $this->updateShowStatistics($params['show_id']);
-
         $isSeatsAvailable = $this->checkSeatsAvailableForBooking($params['selected_seats'], $params['show_id']);
 
         if (!$isSeatsAvailable) {
@@ -66,6 +67,7 @@ class PurchaseOrderService
         }
         $this->ticketService->saveTickets($params['selected_seats'], $params['movie_id'], $params['screen_id'], $params['show_id'], $purchaseOrderId);
         $this->savePurchaseOrderDetails($purchaseOrderId, $priceData['pricing'], $params['selected_seats']);
+        $this->showService->updateShowStatistics($params['show_id']);
         return Helper::prettyApiResponse(trans('messages.insert_success', ['item' => 'Ticket']));
     }
 
@@ -102,8 +104,4 @@ class PurchaseOrderService
         return $this->purchaseOrderRepo->getPurchaseHistory($request->showId);
     }
 
-    public function updateShowStatistics($showId){
-
-        $this->showRepo->updateShowStatistics($showId);
-    }
 }

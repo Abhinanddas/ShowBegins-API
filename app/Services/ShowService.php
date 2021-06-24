@@ -11,6 +11,7 @@ use App\Repositories\ShowRepository;
 use App\Repositories\TicketRepository;
 use App\Repositories\ScreenRepository;
 use App\Services\ScreenService;
+use App\Repositories\PurchaseOrderRepository;
 
 class ShowService
 {
@@ -18,14 +19,22 @@ class ShowService
     protected $showRepo;
     protected $screenRepo;
     protected $screenService;
+    private $purchaseOrderRepo;
 
-    public function __construct(Show $show, ShowRepository $showRepo, TicketRepository $ticketRepo, ScreenService $screenService, ScreenRepository $screenRepo)
-    {
+    public function __construct(
+        Show $show,
+        ShowRepository $showRepo,
+        TicketRepository $ticketRepo,
+        ScreenService $screenService,
+        PurchaseOrderRepository $purchaseOrderRepo,
+        ScreenRepository $screenRepo
+    ) {
         $this->showModel = $show;
         $this->showRepo = $showRepo;
         $this->ticketRepo = $ticketRepo;
         $this->screenRepo = $screenRepo;
         $this->screenService = $screenService;
+        $this->purchaseOrderRepo = $purchaseOrderRepo;
     }
 
     public function addShow($params)
@@ -176,28 +185,45 @@ class ShowService
 
     public function calculateShowStatus($ticketsSold, $totalTickets)
     {
+        if (!$ticketsSold || !$totalTickets) {
+            return config('constants.show_status.F');
+        }
 
-        dd("d");
         $percentageOfTicketSold = ($ticketsSold / $totalTickets) * 100;
 
         if ($percentageOfTicketSold == 0) {
-            return config('constants.show_status.none');
+            return config('constants.show_status.F');
         }
 
         if ($percentageOfTicketSold <= 25) {
-            return config('constants.show_status.quarter');
+            return config('constants.show_status.E');
         }
 
-        if ($percentageOfTicketSold <= 50) {
-            return config('constants.show_status.half');
+        if ($percentageOfTicketSold <= 55) {
+            return config('constants.show_status.D');
         }
 
-        if ($percentageOfTicketSold <= 75) {
-            return config('constants.show_status.triquarter');
+        if ($percentageOfTicketSold <= 79) {
+            return config('constants.show_status.C');
+        }
+
+        if ($percentageOfTicketSold <= 99) {
+            return config('constants.show_status.B');
         }
 
         if ($percentageOfTicketSold == 100) {
-            return config('constants.show_status.full');
+            return config('constants.show_status.A');
         }
+    }
+
+
+    public function updateShowStatistics($showId)
+    {
+        $ticketsSold = $this->purchaseOrderRepo->countTicketsSold($showId);
+        $totalSeats = $this->showRepo->getTotalSeats($showId);
+        $bookingStatus = $this->calculateShowStatus($ticketsSold, $totalSeats);
+        $isHouseFull = $ticketsSold == $totalSeats ? true : false;
+        $this->showRepo->updateShowStatistics($showId,$ticketsSold, $bookingStatus, $isHouseFull);
+        return;
     }
 }

@@ -40,7 +40,6 @@ class PurchaseOrderController extends Controller
      */
     public function store(Request $request)
     {
-        dd("Yes");
         $params = $request->all();
         $requiredFields = [
             'show_id' => 'required',

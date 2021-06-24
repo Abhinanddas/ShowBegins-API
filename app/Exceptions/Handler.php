@@ -83,7 +83,7 @@ class Handler extends ExceptionHandler
         
         $errorMessage = null;
         if ($exception instanceof QueryException) {
-            $errorMessage = trans('validation.queryException');
+            $errorMessage = $exception->getMessage();
         } else {
             if ($exception instanceof ModelNotFoundException) {
                 $errorMessage =  trans('validation.no-model');
