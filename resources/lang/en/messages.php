@@ -13,6 +13,8 @@ return [
     'valid_session' => 'Valid session.',
     'insert_success' => ':item saved successfully.',
     'insert_failure' => ':item save action failed.',
+    'remove_success' => ':item removed successfully.',
+    'not_found' => 'The requested content is not found.',
     'invalid_input' => 'Please provide valid values.',
     'invalid_show_timing' => 'Please sumbit valid show timings.',
     'invalid_ticket_charge_input' => 'Please submit a valid input.',
@@ -23,4 +25,5 @@ return [
         'ticket_details_success' => 'Show details listed successfully.',
     ],
     'list_success' => ':item data listed successfully.',
+    'delete_action_blocked' => 'The remove action for the selected :item is currently blocked.',
 ];

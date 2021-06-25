@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Exceptions\LoginFailException;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use App\Exceptions\DataNotFoundExcepetion;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -56,11 +57,11 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception)
     {
         if ($exception instanceof ModelNotFoundException && $request->wantsJson()) {
-            return Helper::prettyApiResponse('Not found', 'error', 404);
+            return Helper::prettyApiResponse('Not found', 'error', [], 404);
         }
 
         if ($this->isHttpException($exception)) {
-            return Helper::prettyApiResponse('Not found', 'error', 404);
+            return Helper::prettyApiResponse('Not found', 'error', [], 404);
         }
 
         if (!isset($request->httpReq) && $exception instanceof \Illuminate\Validation\ValidationException) {
@@ -70,17 +71,25 @@ class Handler extends ExceptionHandler
         if ($exception instanceof ErrorException) {
             return Helper::prettyApiResponse($exception->getMessage(), 'error', [], 500);
         }
-        
+
         if ($exception instanceof LoginFailException) {
             return Helper::prettyApiResponse(
                 trans('messages.login_failure'),
                 'error',
                 [],
-                401
+                404
             );
         }
-        
-        
+
+        if ($exception instanceof DataNotFoundExcepetion) {
+            return Helper::prettyApiResponse(
+                trans('messages.not_found'),
+                'error',
+                [],
+                204
+            );
+        }
+
         $errorMessage = null;
         if ($exception instanceof QueryException) {
             $errorMessage = $exception->getMessage();

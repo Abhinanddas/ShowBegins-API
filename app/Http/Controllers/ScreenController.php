@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Helper;
 use Illuminate\Http\Request;
 use App\Services\CommonService;
 use App\Services\ScreenService;
@@ -9,6 +10,13 @@ use Illuminate\Support\Facades\Validator;
 
 class ScreenController extends Controller
 {
+    protected $screenService;
+
+    public function __construct(ScreenService $screenService)
+    {
+        $this->screenService = $screenService;
+    }
+
     public function addScreen(Request $request, ScreenService $screenService)
     {
 
@@ -38,6 +46,21 @@ class ScreenController extends Controller
 
         return response()->json(['status' => 'success', 'data' => $screenService->listAllScreens()]);
     }
+    public function removeScreens($id)
+    {
+        return Helper::prettyApiResponse(
+            trans('messages.remove_success', ['item' => 'Screen']),
+            'success',
+            $this->screenService->remove($id)
+        );
+    }
 
-
+    public function index($id)
+    {
+        return Helper::prettyApiResponse(
+            trans('messages.list_success', ['item' => 'Screen']),
+            'success',
+            $this->screenService->getScreenDetails($id)
+        );
+    }
 }

@@ -82,4 +82,11 @@ class ShowRepository
 
         return;
     }
+
+    public function isScereenMappedToShows($showId)
+    {
+        return Show::where('screen_id', $showId)
+            ->where('is_deleted',false)
+            ->first();
+    }
 }

@@ -16,4 +16,15 @@ class ScreenRepository
             ->whereIn('id', $screenIds)
             ->get();
     }
+
+    public function remove($id)
+    {
+        return Screen::where('id', $id)->update([
+            'is_deleted' => true,
+        ]);
+    }
+
+    public function get($id){
+        return Screen::select('id','name','seating_capacity')->where('id',$id)->first();
+    }
 }

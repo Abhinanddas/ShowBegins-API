@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\DB;
 
 class CommonService
 {
@@ -22,8 +23,18 @@ class CommonService
         return hash("md5", $password);
     }
 
-    public function calculatePercentage($total, $whole){
-        return $total *($whole/100);
+    public function calculatePercentage($total, $whole)
+    {
+        return $total * ($whole / 100);
     }
 
+    public function checkIfDataExists($id, $tableName)
+    {
+        $query = DB::table($tableName)
+            ->where('id', $id)
+            ->where('is_deleted', false)
+            ->first();
+
+        return $query ? true : false;
+    }
 }

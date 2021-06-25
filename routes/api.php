@@ -41,5 +41,7 @@ Route::middleware(['session.validator'])->group(
         Route::apiResource('purchase-order', 'PurchaseOrderController');
         Route::apiResource('ticket', 'TicketController');
         Route::get('tickets/booked/{showId}','ShowController@getBookedSeatDetails');
+        Route::delete('screens/{id}','ScreenController@removeScreens');
+        Route::get('screen/{id}','ScreenController@index');
     }
 );
