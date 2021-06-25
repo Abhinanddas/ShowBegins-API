@@ -71,6 +71,35 @@ class ScreenService
             throw new \App\Exceptions\DataNotFoundExcepetion();
         }
 
-        return $this->screenRepo->get($id); 
+        return $this->screenRepo->get($id);
+    }
+
+    public function update($id, $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'seating_capacity' => 'required|integer',
+        ]);
+
+        $dataExists = $this->commonService->checkIfDataExists($id, 'screens');
+
+        if (!$dataExists) {
+
+            $screen =  $this->addScreen($request->all());
+            $status = 'success';
+            $msg = trans('messages.insert_success', ['item' => 'Screen']);
+            $data = ['id' => $screen];
+            $statusCode = 201;
+            if (!$screen) {
+                $status = 'error';
+                $msg = trans('messages.insert_failure', ['item' => 'Screen']);
+                $data = [];
+                $statusCode = 200;
+            }
+
+            return Helper::prettyApiResponse($msg, $status, $data, $statusCode);
+        }
+
+        return $this->screenRepo->update($id, $request->all());
     }
 }

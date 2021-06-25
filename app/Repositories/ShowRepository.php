@@ -3,9 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Show;
-use App\Models\PurchaseOrder;
 use Illuminate\Support\Facades\DB;
-use App\Services\ShowService;
 
 class ShowRepository
 {
@@ -86,7 +84,7 @@ class ShowRepository
     public function isScereenMappedToShows($showId)
     {
         return Show::where('screen_id', $showId)
-            ->where('is_deleted',false)
+            ->where('is_deleted', false)
             ->first();
     }
 }

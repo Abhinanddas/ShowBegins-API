@@ -63,4 +63,13 @@ class ScreenController extends Controller
             $this->screenService->getScreenDetails($id)
         );
     }
+
+    public function update(Request $request, $id)
+    {
+        return Helper::prettyApiResponse(
+            trans('messages.update_success', ['item' => 'Screen']),
+            'success',
+            $this->screenService->update($id, $request)
+        );
+    }
 }

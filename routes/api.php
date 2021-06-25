@@ -31,9 +31,10 @@ Route::middleware(['session.validator'])->group(
         Route::post('list-active-movies','MovieController@listActiveMovies');
         Route::post('screens','ScreenController@addScreen');
         Route::get('screens','ScreenController@listAllScreens');
+        Route::put('screen/{sceenId}','ScreenController@update');
         Route::post('shows','ShowController@addShow');
         Route::get('shows','ShowController@index');
-        Route::get('show-details/{showId}','ShowController@getShowDetails');
+        Route::get('show/{showId}','ShowController@getShowDetails');
         Route::get('dashboard/shows','ShowController@getShowsForDashboard');
         Route::apiResource('pricing', 'PricingController');
         Route::apiResource('purchases', 'PurchaseOrderController');
@@ -43,5 +44,6 @@ Route::middleware(['session.validator'])->group(
         Route::get('tickets/booked/{showId}','ShowController@getBookedSeatDetails');
         Route::delete('screens/{id}','ScreenController@removeScreens');
         Route::get('screen/{id}','ScreenController@index');
+        Route::apiResource('price-package', 'PricePackageController');
     }
 );

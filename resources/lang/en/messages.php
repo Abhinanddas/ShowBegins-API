@@ -13,6 +13,7 @@ return [
     'valid_session' => 'Valid session.',
     'insert_success' => ':item saved successfully.',
     'insert_failure' => ':item save action failed.',
+    'update_success' => ':item updated successfully.',
     'remove_success' => ':item removed successfully.',
     'not_found' => 'The requested content is not found.',
     'invalid_input' => 'Please provide valid values.',

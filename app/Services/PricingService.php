@@ -23,7 +23,6 @@ class PricingService
         $data['name'] = $params['name'];
         $data['value'] = (int)$params['value'];
         $data['is_value_in_percentage'] = $params['is_value_in_percentage'] == 'true' ? true : false;
-        $data['is_base_ticket_charge'] = $params['is_base_ticket_charge'] == 'true' ? true : false;
         return $this->priceModel->store($data);
     }
 
