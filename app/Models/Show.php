@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -31,7 +32,7 @@ class Show extends Model
             $this->tableObject->insert($data);
             return true;
         } catch (\Exception $e) {
-            return false;
+            throw new \Exception($e->getMessage());
         }
     }
 }

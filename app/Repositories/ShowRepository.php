@@ -38,17 +38,20 @@ class ShowRepository
             'shows.screen_id as screen_id',
             'shows.number_of_seats as seat_count',
             'shows.tickets_sold as tickets_sold',
-            'shows.booking_status as booking_status'
+            'shows.booking_status as booking_status',
+            DB::raw('coalesce(SUM(amount),0) as collection')
         )
             ->where('screens.is_deleted', false)
             ->leftJoin('movies', 'shows.movie_id', '=', 'movies.id')
             ->leftJoin('screens', 'shows.screen_id', '=', 'screens.id')
+            ->leftJoin('purchase_orders as po', 'po.show_id', '=', 'shows.id')
+            ->groupBy('shows.id')
             ->orderBy('movie_id', 'desc')
             ->orderBy('show_time', 'asc')
             ->orderBy('screen_id', 'desc');
 
         if ($fromDate) {
-            // $query->where('shows.show_time', '>=', $fromDate);
+            $query->where('shows.show_time', '>=', $fromDate);
         }
 
         if ($toDate) {
@@ -86,5 +89,10 @@ class ShowRepository
         return Show::where('screen_id', $showId)
             ->where('is_deleted', false)
             ->first();
+    }
+
+    public function fetchPricePackageId($showId)
+    {
+        return Show::where('id', $showId)->pluck('pricing_package_master_id')->first();
     }
 }

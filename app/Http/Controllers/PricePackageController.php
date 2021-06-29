@@ -2,10 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Helper;
 use Illuminate\Http\Request;
+use App\Services\PricePackageService;
+use PHPUnit\TextUI\Help;
 
 class PricePackageController extends Controller
 {
+    protected $pricePackageService;
+
+    public function __construct(PricePackageService $pricePackageService)
+    {
+        $this->pricePackageService = $pricePackageService;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -13,7 +22,11 @@ class PricePackageController extends Controller
      */
     public function index()
     {
-        //
+        return Helper::prettyApiResponse(
+            trans('messages.list_success', ['item' => 'Price package']),
+            'success',
+            $this->pricePackageService->list()
+        );
     }
 
     /**
@@ -24,7 +37,11 @@ class PricePackageController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        return Helper::prettyApiResponse(
+            trans('messages.insert_success', ['item' => 'Price Package']),
+            'success',
+            $this->pricePackageService->store($request)
+        );
     }
 
     /**

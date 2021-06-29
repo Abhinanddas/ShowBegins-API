@@ -42,16 +42,31 @@ class PurchaseOrderService
         $this->showService = $showService;
     }
 
-    public function add($params)
+    public function add($request)
     {
-        $isSeatsAvailable = $this->checkSeatsAvailableForBooking($params['selected_seats'], $params['show_id']);
 
+        $request->validate([
+            'show_id' => 'required',
+            'num_of_tickets' => 'required|integer|min:1',
+            'selected_seats' => 'required',
+            'movie_id' => 'required',
+            'screen_id' => 'required',
+        ]);
+        
+        $params = $request->all();
+        $isSeatsAvailable = $this->checkSeatsAvailableForBooking($params['selected_seats'], $params['show_id']);
         if (!$isSeatsAvailable) {
             return Helper::prettyApiResponse(trans('messages.seats_unavailable'), 'error');
         }
 
-        $priceData = $this->pricingService->calculateTicketCharge(count($params['selected_seats']));
+        $pricePackageId = $this->showRepo->fetchPricePackageId($params['show_id']);
+        if (!$pricePackageId) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'errors' => trans('messages.missing_show_price_mapping'),
+            ]);
+        }
 
+        $priceData = $this->pricingService->calculateTicketCharge($pricePackageId,count($params['selected_seats']));
         $purcaseOrder = [
             'num_of_tickets' => count($params['selected_seats']),
             'amount' => (float)$priceData['total_amount'],

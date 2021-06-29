@@ -27,4 +27,11 @@ return [
     ],
     'list_success' => ':item data listed successfully.',
     'delete_action_blocked' => 'The remove action for the selected :item is currently blocked.',
+    'form_error' => [
+        'pricing_package' => [
+            'base_charge_violated_with_percentage_type' => 'Base price should not include percentage type price labels.'
+        ],
+    ],
+    'entity_not_found' => ':entity not found.',
+    'missing_show_price_mapping' => 'Please map the show to pricing.',
 ];

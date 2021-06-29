@@ -9,6 +9,7 @@ use App\Exceptions\LoginFailException;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use App\Exceptions\DataNotFoundExcepetion;
+use App\Exceptions\InvalidFormDataException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -88,6 +89,10 @@ class Handler extends ExceptionHandler
                 [],
                 204
             );
+        }
+
+        if ($exception instanceof InvalidFormDataException) {
+            return Helper::prettyApiResponse($exception->getMessage(), 'error', [], 422);
         }
 
         $errorMessage = null;

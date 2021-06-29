@@ -43,6 +43,7 @@ class ShowService
         $dataArray = [];
         foreach ($params as $param) {
             $movie = $param['movie'];
+            $pricePackage = $param['pricePackage'];
             foreach ($param['screens'] as $screen) {
                 $data = [];
                 foreach ($param['showTime'] as $showTime) {
@@ -51,7 +52,8 @@ class ShowService
                     $data['show_time'] = $showTime;
                     $data['number_of_seats'] = $seatCount[$data['screen_id']];
                     $data['tickets_sold'] = 0;
-                    $data['booking_status'] = config('constants.show_status.none');
+                    $data['booking_status'] = config('constants.show_status.F');
+                    $data['pricing_package_master_id'] = (int)$pricePackage;
 
                     array_push($dataArray, $data);
                 }
@@ -69,6 +71,7 @@ class ShowService
                 'screen' => 'required',
                 'time' => 'required',
                 'date' => 'required',
+                'pricePackage' =>'required',
             ];
 
             $requiredFieldsPresent = Validator::make($param, $requiredFields);
@@ -89,6 +92,7 @@ class ShowService
 
             $inputArray['movie'] = $param['movie'];
             $inputArray['screens'] = $param['screen'];
+            $inputArray['pricePackage'] = $param['pricePackage'];
 
             $showTimeArray = [];
             foreach ($param['time'] as $time) {

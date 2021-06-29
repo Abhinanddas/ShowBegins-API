@@ -36,14 +36,14 @@ Route::middleware(['session.validator'])->group(
         Route::get('shows','ShowController@index');
         Route::get('show/{showId}','ShowController@getShowDetails');
         Route::get('dashboard/shows','ShowController@getShowsForDashboard');
+        Route::get('ticket-charge','PricingController@getTicketCharge');
+        Route::get('tickets/booked/{showId}','ShowController@getBookedSeatDetails');
+        Route::get('screen/{id}','ScreenController@index');
+        Route::delete('screens/{id}','ScreenController@removeScreens');
         Route::apiResource('pricing', 'PricingController');
         Route::apiResource('purchases', 'PurchaseOrderController');
-        Route::get('ticket-charge/{num}','PricingController@getTicketCharge');
         Route::apiResource('purchase-order', 'PurchaseOrderController');
         Route::apiResource('ticket', 'TicketController');
-        Route::get('tickets/booked/{showId}','ShowController@getBookedSeatDetails');
-        Route::delete('screens/{id}','ScreenController@removeScreens');
-        Route::get('screen/{id}','ScreenController@index');
         Route::apiResource('price-package', 'PricePackageController');
     }
 );

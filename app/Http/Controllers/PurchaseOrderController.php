@@ -26,7 +26,7 @@ class PurchaseOrderController extends Controller
     public function index(Request $request)
     {
         return Helper::prettyApiResponse(
-            trans('messages.list_success',['item'=>'Purchase order']),
+            trans('messages.list_success', ['item' => 'Purchase order']),
             'success',
             $this->purchaseOrderService->getPurchaseHistory($request)
         );
@@ -40,20 +40,7 @@ class PurchaseOrderController extends Controller
      */
     public function store(Request $request)
     {
-        $params = $request->all();
-        $requiredFields = [
-            'show_id' => 'required',
-            'num_of_tickets' => 'required|integer|min:1',
-            'selected_seats' => 'required',
-            'movie_id' => 'required',
-            'screen_id' => 'required',
-        ];
-        $validator = Validator::make($params, $requiredFields);
-        if ($validator->fails()) {
-            Helper::prettyApiResponse($this->commonService->getErrorMessagesFromValidator($validator->errors()), 'error');
-        }
-
-        return $this->purchaseOrderService->add($params);
+        return $this->purchaseOrderService->add($request);
     }
 
     /**
