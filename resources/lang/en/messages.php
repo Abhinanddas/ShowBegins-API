@@ -6,7 +6,7 @@ return [
     'signup_failure' => 'SignUp failed! Please try again.',
     'signup_success' => 'User signedup successfully.',
     'access_token_missing' => 'Access token missing.',
-    'app_key_missing' => 'Unauthorised access!',
+    'app_key_missing' => 'App key missing!',
     'invalid_access_token' => 'Invalid access token.',
     'logout_success' => 'User logged out successfully.',
     'api_success_status' => 'Api is Live.',

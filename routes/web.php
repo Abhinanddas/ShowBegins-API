@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', 'Web\LoginWebController@dashboard');
-Route::get('/login', 'Web\LoginWebController@showLogin');
-Route::post('/do-login', 'Web\LoginWebController@doLogin');
+Route::get('/', function ()
+{
+    return view('welcome');
+});
+// Route::get('/', 'Web\LoginWebController@dashboard');
+// Route::get('/login', 'Web\LoginWebController@showLogin');
+// Route::post('/do-login', 'Web\LoginWebController@doLogin');

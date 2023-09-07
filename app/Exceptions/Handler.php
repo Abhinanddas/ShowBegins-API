@@ -8,9 +8,10 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Exceptions\LoginFailException;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use App\Exceptions\DataNotFoundExcepetion;
+use App\Exceptions\DataNotFoundException;
 use App\Exceptions\InvalidFormDataException;
 use Throwable;
+use Illuminate\Support\Facades\Log;
 
 class Handler extends ExceptionHandler
 {
@@ -57,23 +58,28 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        if ($exception instanceof ModelNotFoundException && $request->wantsJson()) {
+        if ($exception instanceof ModelNotFoundException && $request->wantsJson())
+        {
             return Helper::prettyApiResponse('Not found', 'error', [], 404);
         }
 
-        if ($this->isHttpException($exception)) {
+        if ($this->isHttpException($exception))
+        {
             return Helper::prettyApiResponse('Not found', 'error', [], 404);
         }
 
-        if (!isset($request->httpReq) && $exception instanceof \Illuminate\Validation\ValidationException) {
+        if (!isset($request->httpReq) && $exception instanceof \Illuminate\Validation\ValidationException)
+        {
             return  Helper::prettyApiResponse($exception->errors(), 'error', [], 422);
         }
 
-        if ($exception instanceof ErrorException) {
+        if ($exception instanceof ErrorException)
+        {
             return Helper::prettyApiResponse($exception->getMessage(), 'error', [], 500);
         }
 
-        if ($exception instanceof LoginFailException) {
+        if ($exception instanceof LoginFailException)
+        {
             return Helper::prettyApiResponse(
                 trans('messages.login_failure'),
                 'error',
@@ -82,7 +88,8 @@ class Handler extends ExceptionHandler
             );
         }
 
-        if ($exception instanceof DataNotFoundExcepetion) {
+        if ($exception instanceof DataNotFoundException)
+        {
             return Helper::prettyApiResponse(
                 trans('messages.not_found'),
                 'error',
@@ -91,23 +98,27 @@ class Handler extends ExceptionHandler
             );
         }
 
-        if ($exception instanceof InvalidFormDataException) {
+        if ($exception instanceof InvalidFormDataException)
+        {
             return Helper::prettyApiResponse($exception->getMessage(), 'error', [], 422);
         }
 
-        $errorMessage = null;
-        if ($exception instanceof QueryException) {
-            $errorMessage = $exception->getMessage();
-        } else {
-            if ($exception instanceof ModelNotFoundException) {
-                $errorMessage =  trans('validation.no-model');
-            } else {
-                $errorMessage = $exception->getMessage() ?? trans('validation.no.model');
-            }
+        if ($exception instanceof QueryException)
+        {
+            Log::error($exception->getMessage());
+            return Helper::prettyApiResponse(trans('messages.query_exception'), 'error', [], 500);
         }
-        if (isset($errorMessage)) {
-            return Helper::prettyApiResponse($errorMessage, 'error', [], 400);
+
+
+        if ($exception instanceof ModelNotFoundException)
+
+        {
+            Log::error($exception->getMessage());
+            $errorMessage =  trans('validation.no-model');
+            return Helper::prettyApiResponse(trans('messages.general_error'), 'error', [], 500);
         }
-        return parent::render($request, $exception);
+
+        Log::error($exception->getMessage());
+        return Helper::prettyApiResponse(status: false, statusCode: 500, message: trans('messages.general_error'));
     }
 }

@@ -18,13 +18,13 @@ class WebMiddleware
 
     public function handle($request, Closure $next)
     {
-        if (in_array($request->route()->uri, self::ALLOWED_URI)) {
-            return $next($request);
-        }
-        $session = $request->session()->has('access_token');
-        if (!$session) {
-            return redirect('/login');
-        }
+        // if (in_array($request->route()->uri, self::ALLOWED_URI)) {
+        //     return $next($request);
+        // }
+        // $session = $request->session()->has('access_token');
+        // if (!$session) {
+        //     return redirect('/login');
+        // }
         return $next($request);
     }
 }

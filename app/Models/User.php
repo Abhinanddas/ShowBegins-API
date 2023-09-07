@@ -16,9 +16,12 @@ class User extends Model
 
     public function signUpUser($data)
     {
-        try {
+        try
+        {
             return $this->tableObject->insertGetId($data);
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e)
+        {
             return false;
         }
     }
@@ -38,7 +41,7 @@ class User extends Model
             ->update([
                 'access_token' => null,
                 'refresh_token' => null,
-                'token_expires_at'=>null,
+                'token_expires_at' => null,
             ]);
     }
 }
