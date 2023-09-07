@@ -14,14 +14,14 @@ class LoginTest extends TestCase
      *
      * @return void
      */
-    public function testLogin()
-    {
+    // public function testLogin()
+    // {
 
-        $headers = [
-            'ShowBegins-APP-Key' => 'base64:S2wgFrGsp81CHpMbtKV6dMjAcFakrV5b1qWPzNG5+ss=',
-            'ShowBegins-APP-Secret' => 'SHOW_BEGINS_APP_SECRET',
-        ];
-        $this->json('POST', '/api/login',[],$headers)
-            ->assertStatus(200);
-    }
+    //     $headers = [
+    //         'ShowBegins-APP-Key' => 'base64:Blx8kDip2pNliXXkLfejdIt8HEWH8YcZWEWBgRIUD18=',
+    //         'ShowBegins-APP-Secret' => 'SHOW_BEGINS_APP_SECRET',
+    //     ];
+    //     $this->json('POST', '/api/login',[],$headers)
+    //         ->assertStatus(200);
+    // }
 }

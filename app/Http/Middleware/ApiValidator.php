@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Http\Helper;
 use Closure;
 
 class ApiValidator
@@ -18,9 +19,11 @@ class ApiValidator
         $appKey = $request->header('showbegins-app-key');
         $appSecret = $request->header('showbegins-app-secret');
 
-        if (($appKey == env('APP_KEY')) && ($appSecret == env('APP_SECRET'))) {
+        if (($appKey == env('APP_KEY')) && ($appSecret == env('APP_SECRET')))
+        {
             return $next($request);
         }
-        return response()->json(['status' => 'error', 'msg' => trans('messages.app_key_missing')], 401);
+
+        return Helper::prettyApiResponse(status: 'error', message: trans('messages.app_key_missing'), statusCode: 401);
     }
 }

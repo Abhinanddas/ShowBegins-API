@@ -14,6 +14,6 @@ class ApiController extends Controller
 
     public function validateSession(Request $request)
     {
-        return response()->json(['status' => 'success', 'msg' => trans('messages.valid_session')]);
+        return Helper::prettyApiResponse(message: trans('messages.valid_session'));
     }
 }
