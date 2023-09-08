@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Http\Helper;
 use Closure;
+use Illuminate\Support\Facades\Log;
 
 class ApiValidator
 {
@@ -16,9 +17,10 @@ class ApiValidator
      */
     public function handle($request, Closure $next)
     {
-        $appKey = $request->header('showbegins-app-key');
-        $appSecret = $request->header('showbegins-app-secret');
+        $appKey = $request->header('ShowBegins-APP-Key');
+        $appSecret = $request->header('ShowBegins-APP-Secret');
 
+        Log::info(env('APP_KEY'));
         if (($appKey == env('APP_KEY')) && ($appSecret == env('APP_SECRET')))
         {
             return $next($request);
