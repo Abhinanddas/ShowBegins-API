@@ -6,7 +6,7 @@ php artisan down
 
 git pull
 
-compser install --no-dev
+composer install --no-dev
 
 php artisan migrate --force
 
