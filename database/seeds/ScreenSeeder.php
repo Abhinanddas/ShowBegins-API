@@ -30,6 +30,11 @@ class ScreenSeeder extends Seeder
                 'name' => 'SB IMAX',
                 'seating_capacity' => 500,
             ],
+            [
+                'id' => 4,
+                'name' => 'SB Audi Three',
+                'seating_capacity' => 200,
+            ],
         ];
         Screen::upsert($data, ['id']);
     }
