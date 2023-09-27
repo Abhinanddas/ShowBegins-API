@@ -9,40 +9,40 @@ jobs:
     name: Deploy to EC2 on master branch
     runs-on: ubuntu-latest
 
-    services:
-      mysql:
-        image: mysql:latest
-        env:
-          MYSQL_DATABASE: ${{ secrets.DB_DATABASE }}
-          MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    # services:
+    #   mysql:
+    #     image: mysql:latest
+    #     env:
+    #       MYSQL_DATABASE: ${{ secrets.DB_DATABASE }}
+    #       MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
+    #     ports:
+    #       - 3306:3306
+    #     options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
       - name: Checkout the files
         uses: actions/checkout@v2
 
-      - name: Install composer
-        run: composer install --no-dev
+      # - name: Install composer
+      #   run: composer install --no-dev
 
-      - name: Run database commands
-        env:
-          DB_CONNECTION: mysql
-          DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_DATABASE: ${{ secrets.DB_DATABASE }}
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        run: |
-          php artisan migrate --force
-          php artisan db:seed --force
+      # - name: Run database commands
+      #   env:
+      #     DB_CONNECTION: mysql
+      #     DB_HOST: 127.0.0.1
+      #     DB_PORT: 3306
+      #     DB_DATABASE: ${{ secrets.DB_DATABASE }}
+      #     DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      #     DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      #   run: |
+      #     php artisan migrate --force
+      #     php artisan db:seed --force
 
-      - name: Clear config and cache
-        run: php artisan cache:clear && php artisan config:clear
+      # - name: Clear config and cache
+      #   run: php artisan cache:clear && php artisan config:clear
 
-      - name: Cache routes
-        run: php artisan config:cache && php artisan route:cache
+      # - name: Cache routes
+      #   run: php artisan config:cache && php artisan route:cache
 
       - name: Deploy to EC2
         uses: easingthemes/ssh-deploy@main
@@ -60,10 +60,12 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
+            cd /var/www/html/ShowBegins-API/
             composer install --no-dev
             php artisan migrate --force
             php artisan db:seed --force
-            php artisan cache:clear
+            php artisan route:clear
             php artisan config:clear
+            php artisan cache:clear
             php artisan config:cache
             php artisan route:cache
