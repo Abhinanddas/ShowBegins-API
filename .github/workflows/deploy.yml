@@ -1,23 +1,37 @@
 name: Push-to-EC2
 on:
-    push:
-        branches:
-            - master
+  push:
+    branches:
+      - master
 
 jobs:
-    deploy:
-        name: Deploy to EC2 on master branch
-        runs-on: ubuntu-latest
-        
-        steps:
-            - name: Checkout the files
-              uses: actions/checkout@v2
+  deploy:
+    name: Deploy to EC2 on master branch
+    runs-on: ubuntu-latest
 
-            - name: Deploy to EC2
-              uses: easingthemes/ssh-deploy@main
-              env:
-                SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-                REMOTE_HOST: ${{ secrets.EC2_HOST }}
-                REMOTE_USER: ${{ secrets.EC2_USERNAME }}
-                TARGET: ${{ secrets.TARGET_DIR }}
+    steps:
+      - name: Checkout the files
+        uses: actions/checkout@v2
 
+      - name: Deploy to EC2
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          REMOTE_HOST: ${{ secrets.EC2_HOST }}
+          REMOTE_USER: ${{ secrets.EC2_USERNAME }}
+          TARGET: ${{ secrets.TARGET_DIR }}
+
+      - name: Install composer
+        run: composer install --no-dev
+
+      - name: Run migrations
+        run: php artisan migrate --force
+
+      - name: Run db seed
+        run: php artisan db:seed --force
+
+      - name: Clear config and cache
+        run: php artisan cache:clear && php artisan config:clear
+
+      - name: Cache routes
+        run: php artisan config:cache && php artisan route:cache

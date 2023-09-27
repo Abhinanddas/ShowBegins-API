@@ -1,5 +1,8 @@
 <?php
 
+namespace Database\Seeders;
+
+use App\Models\Screen;
 use Illuminate\Database\Seeder;
 
 class ScreenSeeder extends Seeder
@@ -11,6 +14,23 @@ class ScreenSeeder extends Seeder
      */
     public function run()
     {
-        //
+        $data = [
+            [
+                'id' => 1,
+                'name' => 'SB Audi One',
+                'seating_capacity' => 1000
+            ],
+            [
+                'id' => 2,
+                'name' => 'SB Audi Two',
+                'seating_capacity' => 500,
+            ],
+            [
+                'id' => 3,
+                'name' => 'SB IMAX',
+                'seating_capacity' => 500,
+            ],
+        ];
+        Screen::upsert($data, ['id']);
     }
 }
