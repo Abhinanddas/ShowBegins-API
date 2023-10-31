@@ -42,7 +42,10 @@ jobs:
           cp .env.ci .env
 
       - name: Install composer
-        run: composer install --no-dev
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+        
+      - name: Generate Key
+        run: php artisan key:generate
 
       - name: Run test suite
         run: |
