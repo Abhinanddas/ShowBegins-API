@@ -49,7 +49,7 @@ jobs:
 
       - name: Run test suite
         run: |
-          php artisan test
+          vendor/bin/phpunit
 
       # - name: Run database commands
       #   env:
