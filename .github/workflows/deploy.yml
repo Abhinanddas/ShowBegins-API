@@ -9,22 +9,44 @@ jobs:
     name: Deploy to EC2 on master branch
     runs-on: ubuntu-latest
 
-    # services:
-    #   mysql:
-    #     image: mysql:latest
-    #     env:
-    #       MYSQL_DATABASE: ${{ secrets.DB_DATABASE }}
-    #       MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
-    #     ports:
-    #       - 3306:3306
-    #     options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: ${{ secrets.DB_DATABASE }}
+          # MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
       - name: Checkout the files
         uses: actions/checkout@v2
 
-      # - name: Install composer
-      #   run: composer install --no-dev
+      - name: Cache composer dependencies
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: composer-${{hashFiles('**/composer.lock')}}
+          restore-keys: |
+            composer -
+
+      - name: Install PHP
+        uses: shivamathur/setup-php@v2
+        with:
+          php-version: 8.1
+
+      - name: Copy .env file
+        run: |
+          cp .env.ci .env
+
+      - name: Install composer
+        run: composer install --no-dev
+
+      - name: Run test suite
+        run: |
+          php artisan test
 
       # - name: Run database commands
       #   env:
@@ -44,28 +66,28 @@ jobs:
       # - name: Cache routes
       #   run: php artisan config:cache && php artisan route:cache
 
-      - name: Deploy to EC2
-        uses: easingthemes/ssh-deploy@main
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          REMOTE_HOST: ${{ secrets.EC2_HOST }}
-          REMOTE_USER: ${{ secrets.EC2_USERNAME }}
-          TARGET: ${{ secrets.TARGET_DIR }}
+      # - name: Deploy to EC2
+      #   uses: easingthemes/ssh-deploy@main
+      #   env:
+      #     SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      #     REMOTE_HOST: ${{ secrets.EC2_HOST }}
+      #     REMOTE_USER: ${{ secrets.EC2_USERNAME }}
+      #     TARGET: ${{ secrets.TARGET_DIR }}
 
-      - name: Post Deploy
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_HOST}}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          script: |
-            cd /var/www/html/ShowBegins-API/
-            composer install --no-dev
-            php artisan migrate --force
-            php artisan db:seed --force
-            php artisan route:clear
-            php artisan config:clear
-            php artisan cache:clear
-            php artisan config:cache
-            php artisan route:cache
+      # - name: Post Deploy
+      #   uses: appleboy/ssh-action@master
+      #   with:
+      #     host: ${{ secrets.EC2_HOST}}
+      #     username: ${{ secrets.EC2_USERNAME }}
+      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+      #     port: 22
+      #     script: |
+      #       cd /var/www/html/ShowBegins-API/
+      #       composer install --no-dev
+      #       php artisan migrate --force
+      #       php artisan db:seed --force
+      #       php artisan route:clear
+      #       php artisan config:clear
+      #       php artisan cache:clear
+      #       php artisan config:cache
+      #       php artisan route:cache
